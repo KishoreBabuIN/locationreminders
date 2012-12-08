@@ -6,6 +6,8 @@
 package com.androidgroup.gbp.reminders;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
+
 import com.google.android.maps.GeoPoint;
 
 public class Task {
@@ -13,6 +15,7 @@ public class Task {
     // methods
     public Task() {
         // TODO Auto-generated constructor stub
+        due_time = new Date();
         remind_time = 0;
         remind_distance = 0;
     }
@@ -21,26 +24,41 @@ public class Task {
         return due_time.getTime();
     }
     
-    public void set_due_time() {
-        
+    public String get_due_time_string() {
+        return due_time.toString();
+    }
+    
+    public void set_due_time(int min, int hour, int date, int month, int year) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(year, month, date, hour, min, 0);
+        due_time = cal.getTime();
     }
     
     public GeoPoint get_location() {
         return location;
     }
     
-    public void set_location() {
-        
+    public void set_location(GeoPoint gp) {
+        location = gp;
     }
     
     public long get_remind_time() {
-        return remind_time;
+        return due_time.getTime() - remind_time;
+    }
+    
+    public String get_remind_time_string() {
+        Date date = due_time;
+        date.setTime(date.getTime() - remind_time);
+        return date.toString();
     }
     
     // input: time (in minutes)
-    public boolean set_remind_time(long time) {
-        if (time >= 0) {
-            remind_time = time * 60 * 1000;     // convert minutes to milliseconds
+    public boolean set_remind_time(int mins, int hours, int days) {
+        if (mins >= 0 && hours >= 0 && days >= 0) {
+            // convert to milliseconds
+            remind_time = (mins * 60 * 1000) 
+                        + (hours * 60 * 60 * 1000) 
+                        + (days * 24 * 60 * 60 * 1000);
             return true;
         }
         return false;
