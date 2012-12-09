@@ -12,7 +12,8 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="Reminders"
-        android:theme="@android:style/Theme.NoTitleBar" >
+        android:theme="@android:style/Theme.NoTitleBar" 
+        android:debuggable="true" >
         <activity
             android:name=".MainActivity"
             android:label="Reminders" >
