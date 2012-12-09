@@ -7,17 +7,31 @@ package com.androidgroup.gbp.reminders;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import com.google.android.maps.GeoPoint;
 
 public class Task {
 
     // methods
     public Task() {
-        // TODO Auto-generated constructor stub
+        name = "";
         due_time = new Date();
         remind_time = 0;
         remind_distance = 0;
+    }
+    
+    public Task(String _name) {
+        name = _name;
+        due_time = new Date();
+        remind_time = 0;
+        remind_distance = 0;
+    }
+    
+    public String get_name() {
+        return name;
+    }
+    
+    public void set_name(String _name) {
+        name = _name;
     }
     
     public long get_due_time() {
@@ -52,7 +66,6 @@ public class Task {
         return date.toString();
     }
     
-    // input: time (in minutes)
     public boolean set_remind_time(int mins, int hours, int days) {
         if (mins >= 0 && hours >= 0 && days >= 0) {
             // convert to milliseconds
@@ -77,7 +90,10 @@ public class Task {
         return false;
     }
 
+    
+    
     // attributes
+    private String name;                // name that describes task
     private Date due_time;              // time when task is due
     private GeoPoint location;          // location of task
     private long remind_time;           // amount of time in milliseconds within due time that user should be reminded 
