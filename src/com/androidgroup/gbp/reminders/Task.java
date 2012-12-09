@@ -15,6 +15,7 @@ public class Task {
     public Task() {
         name = "";
         due_time = new Date();
+        has_due_time = false;
         remind_time = 0;
         remind_distance = 0;
     }
@@ -95,6 +96,7 @@ public class Task {
     // attributes
     private String name;                // name that describes task
     private Date due_time;              // time when task is due
+    private boolean has_due_time;       // true if there is a set due time, else false
     private GeoPoint location;          // location of task
     private long remind_time;           // amount of time in milliseconds within due time that user should be reminded 
     private float remind_distance;      // distance in meters within task location user should be reminded
