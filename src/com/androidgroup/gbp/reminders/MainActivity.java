@@ -3,13 +3,14 @@ package com.androidgroup.gbp.reminders;
 import java.util.LinkedList;
 
 import android.os.Bundle;
-import android.app.Activity;
+import android.app.ListActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity  {
     
     // layout
     private ListView _lvTasks;
@@ -19,21 +20,14 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        _lvTasks = (ListView) findViewById(R.id.lvTasks);
+        _lvTasks = getListView();
         
         task_list = new TaskList();
         tasks = task_list.get_tasks();
-        tasks.add(new Task("move"));
-        tasks.add(new Task("Buy Milk"));
-        tasks.add(new Task("add task"));
-        tasks.get(0).set_due_time(0, 6, 8, 12, 2012);
-        tasks.get(0).set_remind_time(37, 2, 1);
-        Log.i("OC", "Time: " + tasks.get(0).get_due_time_string());
-        Log.i("OC", "time: " + tasks.get(0).get_remind_time_string());
-        String[] names = task_list.get_names();
-        Log.i("OC", "name: " + names[0]);        
+        for (int i = 0; i < 15; ++i) {
+            tasks.add(new Task("Task" + i));
+        } 
         
-        task_list.sort_by_name();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
                                                                 android.R.layout.simple_list_item_1, 
                                                                 android.R.id.text1, 
@@ -45,6 +39,13 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
+    }
+    
+    // called when list item is clicked
+    // position is the index of the view clicked
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        Log.i("OL", "Item clicked: " + position);
     }
     
     
