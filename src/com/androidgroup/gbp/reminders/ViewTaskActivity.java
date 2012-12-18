@@ -3,17 +3,20 @@ package com.androidgroup.gbp.reminders;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class ViewTaskActivity extends Activity {
     
-    private TextView _tv_name;
-    private TextView _tv_description;
-    private TextView _tv_location;
-    private TextView _tv_duedate;
-    private Button _bt_back;
+    private TextView _tv_name           = null;
+    private TextView _tv_description    = null;
+    private TextView _tv_location       = null;
+    private TextView _tv_duedate        = null;
+    private Button   _bt_back           = null;
+    private Button   _bt_edit           = null;
+    private Button   _bt_delete         = null;
     
     
     public ViewTaskActivity() {
@@ -30,7 +33,9 @@ public class ViewTaskActivity extends Activity {
         _tv_description =   (TextView) findViewById(R.id.tv_description);
         _tv_location =      (TextView) findViewById(R.id.tv_location);
         _tv_duedate =       (TextView) findViewById(R.id.tv_duedate);
-        _bt_back =          (Button) findViewById(R.id.bt_back);
+        _bt_back =          (Button)   findViewById(R.id.bt_back);
+        _bt_edit =          (Button)   findViewById(R.id.bt_edit);
+        _bt_delete =        (Button)   findViewById(R.id.bt_delete);
         
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -42,9 +47,26 @@ public class ViewTaskActivity extends Activity {
         
         _bt_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Log.i("OC", "BACK");
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
                 finish();
+            }
+        });
+        
+        _bt_edit.setOnClickListener(new View.OnClickListener() {            
+            public void onClick(View v) {
+                Log.i("OC", "EDITVIEW");
+                Intent intent = new Intent(v.getContext(), EditTaskActivity.class);
+                startActivityForResult(intent, 0);
+            }
+        });
+        
+        _bt_delete.setOnClickListener(new View.OnClickListener() {            
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Log.i("OC", "DELETE");
+                
             }
         });
     }
