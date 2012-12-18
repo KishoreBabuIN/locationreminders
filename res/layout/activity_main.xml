@@ -2,19 +2,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
-    <Button android:layout_width="fill_parent"
-        android:layout_height="wrap_content" android:id="@+id/testbutton"
-        android:text="hello" android:layout_alignParentBottom="true" >
-        
-    </Button>
     
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true" >
-
+        android:layout_alignParentRight="true" 
+        android:layout_above="@+id/rl_footer" >
     </ListView>
+    
+    <RelativeLayout
+        android:id="@+id/rl_footer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+        <EditText
+            android:id="@+id/et_addtask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/bt_addtask" >
+        </EditText>
+
+        <Button
+            android:id="@+id/bt_edittask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:onClick="onClick"
+            android:text="+" >
+        </Button>
+
+        <Button
+            android:id="@+id/bt_addtask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/bt_edittask"
+            android:onClick="onClick"
+            android:text="Add" >
+        </Button>
+        
+    </RelativeLayout>
 
 </RelativeLayout>

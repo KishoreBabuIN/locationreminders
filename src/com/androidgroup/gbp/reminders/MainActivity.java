@@ -4,11 +4,15 @@ import java.util.LinkedList;
 
 import android.os.Bundle;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 public class MainActivity extends ListActivity  {
@@ -18,7 +22,10 @@ public class MainActivity extends ListActivity  {
     private TaskList task_list;
     
     // layout
-    private ListView _lvTasks;
+    private ListView    _lvTasks        = null;
+    private EditText    _et_addtask     = null;
+    private Button      _bt_addtask     = null;
+    private Button      _bt_edittask    = null;
 
     
     // methods
@@ -27,6 +34,9 @@ public class MainActivity extends ListActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         _lvTasks = getListView();
+        _et_addtask = (EditText) findViewById(R.id.et_addtask);
+        _bt_addtask = (Button) findViewById(R.id.bt_addtask);
+        _bt_edittask = (Button) findViewById(R.id.bt_edittask);
         
         task_list = new TaskList();
         tasks = task_list.get_tasks();
@@ -37,11 +47,23 @@ public class MainActivity extends ListActivity  {
         tasks.get(2).set_description("Do Stuff");
         tasks.get(2).set_location_name("Home");
         
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-                                                                android.R.layout.simple_list_item_1, 
-                                                                android.R.id.text1, 
-                                                                task_list.get_names());
-        _lvTasks.setAdapter(adapter);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
+//                                                                android.R.layout.simple_list_item_1, 
+//                                                                android.R.id.text1, 
+//                                                                task_list.get_names());
+//        _lvTasks.setAdapter(adapter);
+        update_list();
+        
+        _bt_addtask.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                tasks.add(new Task(_et_addtask.getText().toString()));
+                _et_addtask.setText("");
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(_et_addtask.getWindowToken(), 0);
+                update_list();
+            }
+        });
+        
     }
 
     @Override
@@ -64,5 +86,13 @@ public class MainActivity extends ListActivity  {
         else
             intent.putExtra("DUEDATE", "");
         startActivityForResult(intent, 0);
+    }
+    
+    public void update_list() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
+                                                                android.R.layout.simple_list_item_1, 
+                                                                android.R.id.text1, 
+                                                                task_list.get_names());
+        _lvTasks.setAdapter(adapter);
     }
 }
