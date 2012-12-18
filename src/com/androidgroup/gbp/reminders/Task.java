@@ -35,6 +35,14 @@ public class Task {
         name = _name;
     }
     
+    public String get_description() {
+        return description;
+    }
+    
+    public void set_description(String _description) {
+        description = _description;
+    }
+    
     public long get_due_time() {
         return due_time.getTime();
     }
@@ -45,15 +53,28 @@ public class Task {
     
     public void set_due_time(int min, int hour, int date, int month, int year) {
         GregorianCalendar cal = new GregorianCalendar();
-        cal.set(year, month, date, hour, min, 0);
+        cal.set(year, month - 1, date, hour, min, 0);
         due_time = cal.getTime();
+        has_due_time = true;
     }
     
-    public GeoPoint get_location() {
+    public boolean has_duetime() {
+        return has_due_time;
+    }
+    
+    public String get_location_name() {
+        return location_name;
+    }
+    
+    public void set_location_name(String _location_name) {
+        location_name = _location_name;
+    }
+    
+    public GeoPoint get_location_gp() {
         return location;
     }
     
-    public void set_location(GeoPoint gp) {
+    public void set_location_gp(GeoPoint gp) {
         location = gp;
     }
     
@@ -95,9 +116,11 @@ public class Task {
     
     // attributes
     private String name;                // name that describes task
+    private String description;         // describes the task in further detail
     private Date due_time;              // time when task is due
     private boolean has_due_time;       // true if there is a set due time, else false
-    private GeoPoint location;          // location of task
+    private String location_name;       // name of location of task
+    private GeoPoint location;          // geopoint location of task
     private long remind_time;           // amount of time in milliseconds within due time that user should be reminded 
     private float remind_distance;      // distance in meters within task location user should be reminded
 }

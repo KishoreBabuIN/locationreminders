@@ -46,10 +46,10 @@ public class TaskList {
             public int compare(Task task1, Task task2) {
                 float[] dist1 = new float[1];
                 float[] dist2 = new float[1];
-                double task1_lat = task1.get_location().getLatitudeE6();
-                double task1_long = task1.get_location().getLongitudeE6();
-                double task2_lat = task2.get_location().getLatitudeE6();
-                double task2_long = task2.get_location().getLongitudeE6();
+                double task1_lat = task1.get_location_gp().getLatitudeE6();
+                double task1_long = task1.get_location_gp().getLongitudeE6();
+                double task2_lat = task2.get_location_gp().getLatitudeE6();
+                double task2_long = task2.get_location_gp().getLongitudeE6();
                 android.location.Location.distanceBetween(loc.getLatitudeE6(), 
                                                           loc.getLongitudeE6(), 
                                                           task1_lat, 
