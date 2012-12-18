@@ -21,8 +21,11 @@
             android:id="@+id/et_addtask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/bt_addtask" >
+            android:layout_alignParentLeft="true" 
+            android:layout_toLeftOf="@+id/bt_addtask"
+            android:hint="Enter New Task"
+            android:imeOptions="actionDone" 
+            android:singleLine="true" >
         </EditText>
 
         <Button

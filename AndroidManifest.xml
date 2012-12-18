@@ -16,14 +16,17 @@
         android:debuggable="true" >
         <activity
             android:name=".MainActivity"
-            android:label="Reminders" >
+            android:label="Reminders" 
+            android:windowSoftInputMode="stateAlwaysHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="ViewTaskActivity"></activity>
+        <activity 
+            android:name="ViewTaskActivity">            
+        </activity>
     </application>
 
 </manifest>

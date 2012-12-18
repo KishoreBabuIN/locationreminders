@@ -7,13 +7,16 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends ListActivity  {
     
@@ -22,7 +25,7 @@ public class MainActivity extends ListActivity  {
     private TaskList task_list;
     
     // layout
-    private ListView    _lvTasks        = null;
+    private ListView    _lv_tasks       = null;
     private EditText    _et_addtask     = null;
     private Button      _bt_addtask     = null;
     private Button      _bt_edittask    = null;
@@ -33,19 +36,21 @@ public class MainActivity extends ListActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        _lvTasks = getListView();
+        _lv_tasks = getListView();
         _et_addtask = (EditText) findViewById(R.id.et_addtask);
         _bt_addtask = (Button) findViewById(R.id.bt_addtask);
         _bt_edittask = (Button) findViewById(R.id.bt_edittask);
         
+        //_et_addtask.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        
         task_list = new TaskList();
         tasks = task_list.get_tasks();
-        for (int i = 0; i < 15; ++i) {
-            tasks.add(new Task("Task" + i));
-        } 
-        tasks.get(2).set_due_time(00, 4, 1, 1, 2013);
-        tasks.get(2).set_description("Do Stuff");
-        tasks.get(2).set_location_name("Home");
+//        for (int i = 0; i < 15; ++i) {
+//            tasks.add(new Task("Task" + i));
+//        } 
+//        tasks.get(2).set_due_time(00, 4, 1, 1, 2013);
+//        tasks.get(2).set_description("Do Stuff");
+//        tasks.get(2).set_location_name("Home");
         
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
 //                                                                android.R.layout.simple_list_item_1, 
@@ -56,11 +61,35 @@ public class MainActivity extends ListActivity  {
         
         _bt_addtask.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                tasks.add(new Task(_et_addtask.getText().toString()));
+                String name = _et_addtask.getText().toString();
                 _et_addtask.setText("");
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(_et_addtask.getWindowToken(), 0);
+                if (name.length() != 0)
+                    tasks.add(new Task(name));
                 update_list();
+            }
+        });
+        
+        _bt_edittask.setOnClickListener(new View.OnClickListener() {            
+            public void onClick(View v) {
+
+            }
+        });
+        
+        _et_addtask.setOnEditorActionListener(new TextView.OnEditorActionListener() {            
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    String name = _et_addtask.getText().toString();
+                    _et_addtask.setText("");
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(_et_addtask.getWindowToken(), 0);
+                    if (name.length() != 0)
+                        tasks.add(new Task(name));
+                    update_list();
+                    return true;
+                }
+                return false;
             }
         });
         
@@ -89,10 +118,12 @@ public class MainActivity extends ListActivity  {
     }
     
     public void update_list() {
+        if (tasks.size() == 0)
+            return;
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
                                                                 android.R.layout.simple_list_item_1, 
                                                                 android.R.id.text1, 
                                                                 task_list.get_names());
-        _lvTasks.setAdapter(adapter);
+        _lv_tasks.setAdapter(adapter);
     }
 }
