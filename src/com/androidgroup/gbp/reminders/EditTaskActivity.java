@@ -1,12 +1,5 @@
 package com.androidgroup.gbp.reminders;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.OptionalDataException;
-import java.io.StreamCorruptedException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,6 +34,8 @@ public class EditTaskActivity extends Activity {
     Button      _bt_done        = null;
     Button      _bt_cancel      = null;
     CheckBox    _cb_due_date    = null;
+    
+    private Task task = null;
 
     public EditTaskActivity() {
         // TODO Auto-generated constructor stub
@@ -59,16 +54,21 @@ public class EditTaskActivity extends Activity {
         _bt_cancel =        (Button)     findViewById(R.id.bt_cancel);
         _cb_due_date =      (CheckBox)   findViewById(R.id.cb_due_date);
         
-        _cb_due_date.setChecked(false);
-        _dp_date.setVisibility(View.INVISIBLE);
-        _tp_time.setVisibility(View.INVISIBLE);
-        
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            _et_name.setText(extras.getString("NAME"));
-            _et_description.setText(extras.getString("DESCRIPTION"));
-            _et_location.setText(extras.getString("LOCATION"));
-            //_et_due_date.setText(extras.getString("DUEDATE"));
+
+        task = getIntent().getParcelableExtra("TASK");
+        _et_name.setText(task.get_name());
+        _et_description.setText(task.get_description());
+        _et_location.setText(task.get_location_name());
+                
+        if (task.has_duetime()) {
+            _cb_due_date.setChecked(true);
+            _dp_date.setVisibility(View.VISIBLE);
+            _tp_time.setVisibility(View.VISIBLE);
+        }
+        else {
+            _cb_due_date.setChecked(false);
+            _dp_date.setVisibility(View.INVISIBLE);
+            _tp_time.setVisibility(View.INVISIBLE);
         }
         
         _cb_due_date.setOnClickListener(new View.OnClickListener() {
@@ -89,19 +89,10 @@ public class EditTaskActivity extends Activity {
         _bt_done.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ViewTaskActivity.class);
-                intent.putExtra("NAME", _et_name.getText().toString());
-                intent.putExtra("DESCRIPTION", _et_description.getText().toString());
-                intent.putExtra("LOCATION", _et_location.getText().toString());
-                if (_cb_due_date.isChecked() == false) 
-                    intent.putExtra("HASDUEDATE", 0);
-                else {
-                    intent.putExtra("HASDUEDATE", 1);
-                    intent.putExtra("DATE", _dp_date.getDayOfMonth());
-                    intent.putExtra("Month", _dp_date.getMonth());
-                    intent.putExtra("YEAR", _dp_date.getYear());
-                    intent.putExtra("HOUR", _tp_time.getCurrentHour());
-                    intent.putExtra("MINUTE", _tp_time.getCurrentMinute());   
-                }
+                task.set_name(_et_name.getText().toString());
+                task.set_description(_et_description.getText().toString());
+                task.set_location_name(_et_location.getText().toString());
+                intent.putExtra("TASK", task);
                 startActivityForResult(intent, 0);
             }
         });

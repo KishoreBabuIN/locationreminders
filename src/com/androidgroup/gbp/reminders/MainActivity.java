@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import android.os.Bundle;
@@ -102,6 +103,7 @@ public class MainActivity extends ListActivity  {
     protected void onResume() {
         super.onRestart();
         Log.i("OR", "ON RESUME");
+        Task task = getIntent().getParcelableExtra("TASK");
     }
     
     @Override
@@ -122,19 +124,18 @@ public class MainActivity extends ListActivity  {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         Log.i("OL", "Item clicked: " + position);
         Intent intent = new Intent(v.getContext(), ViewTaskActivity.class);
-        intent.putExtra("NAME", tasks.get(position).get_name());
-        intent.putExtra("DESCRIPTION", tasks.get(position).get_description());
-        intent.putExtra("LOCATION", tasks.get(position).get_location_name());
-        if (tasks.get(position).has_duetime())
-            intent.putExtra("DUEDATE", tasks.get(position).get_due_time_string());
-        else
-            intent.putExtra("DUEDATE", "");
+        intent.putExtra("TASK", tasks.get(position));
         startActivityForResult(intent, 0);
     }
     
     public void update_list() {
         if (tasks.size() == 0)
             return;
+        int i = 0;
+        for(Task task : tasks) {
+            task.set_id(i);
+            ++i;
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
                                                                 android.R.layout.simple_list_item_1, 
                                                                 android.R.id.text1, 

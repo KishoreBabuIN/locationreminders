@@ -6,9 +6,6 @@
 package com.androidgroup.gbp.reminders;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -18,22 +15,25 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 
-public class Task implements Serializable {
+public class Task implements Parcelable {
 
     // attributes
     private String name;                // name that describes task
     private String description;         // describes the task in further detail
     private Date due_time;              // time when task is due
-    private boolean has_due_time;       // true if there is a set due time, else false
+    private Boolean has_due_time;       // true if there is a set due time, else false
     private String location_name;       // name of location of task
     private GeoPoint location;          // geopoint location of task
     private long remind_time;           // amount of time in milliseconds within due time that user should be reminded 
     private float remind_distance;      // distance in meters within task location user should be reminded
+    private int task_id;                 // unique identifier for task
     private Context context;
 
     private static final long serialVersionUID = -2091150675452666853L;
@@ -43,18 +43,49 @@ public class Task implements Serializable {
     // methods
     public Task(Context _context) {
         name = "";
+        description = "";
         due_time = new Date();
         has_due_time = false;
+        location_name = "";
+        location = new GeoPoint(0, 0);
         remind_time = 0;
         remind_distance = 0;
+        task_id = -1;
         context = _context;
     }
     
     public Task(Context _context, String _name) {
         name = _name;
+        description = "";
         due_time = new Date();
+        has_due_time = false;
+        location_name = "";
+        location = new GeoPoint(0, 0);
         remind_time = 0;
         remind_distance = 0;
+        task_id = -1;
+        context = _context;
+    }
+    
+    public Task(Parcel in) {
+        context = null;
+        name = in.readString();
+        description = in.readString();
+        due_time = (Date) in.readSerializable();
+        if (in.readInt() == 1)
+            has_due_time = true;
+        else 
+            has_due_time = false;
+        location_name = in.readString();
+        int lat = in.readInt();
+        int lon = in.readInt();
+        location = new GeoPoint(lat, lon);
+        remind_time = in.readLong();
+        remind_distance = in.readFloat();
+        task_id = in.readInt();
+    }
+    
+    public void set_context(Context _context) {
         context = _context;
     }
     
@@ -144,34 +175,19 @@ public class Task implements Serializable {
         return false;
     }
     
-    public void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeLong(serialVersionUID);
-        out.writeObject(name);
-        out.writeObject(description);         
-        out.writeObject(due_time);              
-        out.writeObject(has_due_time);       
-        out.writeObject(location_name);       
-        out.writeObject(location);          
-        out.writeObject(remind_time);            
-        out.writeObject(remind_distance);
+    public int get_id() {
+        return task_id;
     }
     
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        if (in.readLong() != serialVersionUID)
-            return;
-        name = (String) in.readObject();
-        description = (String)  in.readObject();
-        due_time = (Date) in.readObject();
-        has_due_time = (Boolean) in.readObject();
-        location_name = (String) in.readObject();
-        location = (GeoPoint) in.readObject();
-        remind_time = in.readLong();
-        remind_distance = (Float) in.readObject();
+    public void set_id(int id) {
+        task_id = id;
     }
     
     private class GetAddressLocationTask extends AsyncTask<String, Void, GeoPoint> {
         @Override
         protected GeoPoint doInBackground(String... _address) {
+            if (context == null)
+                return null;
             if (_address.length == 0)
                 return null;
             Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
@@ -195,8 +211,38 @@ public class Task implements Serializable {
         protected void onPostExecute(GeoPoint gp) {
             if (gp == null) {
                 location_name = "";
-                Toast.makeText(context, "Unable to find location", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Unable to find location", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeSerializable(due_time);
+        if (has_due_time)
+            dest.writeInt(1);
+        else
+            dest.writeInt(0);
+        dest.writeString(location_name);
+        dest.writeInt(location.getLatitudeE6());
+        dest.writeInt(location.getLongitudeE6());
+        dest.writeLong(remind_time);
+        dest.writeFloat(remind_distance);
+        dest.writeInt(task_id);
+    }
+    
+    public static final Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        public Task createFromParcel(Parcel in) {
+            return new Task(in);
+        }
+
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 }

@@ -3,6 +3,7 @@ package com.androidgroup.gbp.reminders;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +17,8 @@ public class ViewTaskActivity extends Activity {
     private Button   _bt_back           = null;
     private Button   _bt_edit           = null;
     private Button   _bt_delete         = null;
+    
+    private Task task = null;
     
     
     public ViewTaskActivity() {
@@ -36,19 +39,15 @@ public class ViewTaskActivity extends Activity {
         _bt_edit =          (Button)   findViewById(R.id.bt_edit);
         _bt_delete =        (Button)   findViewById(R.id.bt_delete);
         
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            _tv_name.setText(extras.getString("NAME"));
-            _tv_description.setText(extras.getString("DESCRIPTION"));
-            _tv_location.setText(extras.getString("LOCATION"));
-            if (extras.getInt("HASDUEDATE") == 1) {
-                
-            }
-        }
+        
+        task = getIntent().getParcelableExtra("TASK");
+
+        update();
         
         _bt_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), MainActivity.class);
+                intent.putExtra("TASK", task);
                 startActivityForResult(intent, 0);
             }
         });
@@ -56,6 +55,7 @@ public class ViewTaskActivity extends Activity {
         _bt_edit.setOnClickListener(new View.OnClickListener() {            
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), EditTaskActivity.class);
+                intent.putExtra("TASK", task);
                 startActivityForResult(intent, 0);
             }
         });
@@ -66,5 +66,22 @@ public class ViewTaskActivity extends Activity {
             }
         });
     }
-
+    
+    public void update() {
+        _tv_name.setText(task.get_name());
+        _tv_description.setText(task.get_description());
+        _tv_location.setText(task.get_location_name());
+        if (task.has_duetime())
+            _tv_duedate.setText(task.get_due_time_string());
+        else
+            _tv_duedate.setText("");
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onRestart();
+        Log.i("OR", "ON RESUME VIEW");
+        task = getIntent().getParcelableExtra("TASK");
+        update();
+    }
 }

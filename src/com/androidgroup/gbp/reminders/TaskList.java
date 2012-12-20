@@ -32,6 +32,23 @@ public class TaskList {
         return names;
     }
     
+    public boolean set_by_id(Task _task, int id) {
+        boolean ret = false;
+        if (id < 0)
+            return ret;
+        for(Task task : tasks) {
+            if (task.get_id() == id) {
+                task = _task;
+                ret = true;
+            }
+        }
+        if (ret == false) {
+            tasks.add(_task);
+            ret = true;
+        }
+        return ret;
+    }
+    
     public void sort_by_due_time() {
         int size = tasks.size();
         if (size == 0)
