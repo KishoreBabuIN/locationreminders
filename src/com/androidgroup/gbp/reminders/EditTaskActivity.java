@@ -9,7 +9,9 @@ import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,10 +24,14 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.TimePicker;
 
 public class EditTaskActivity extends Activity {
+
+    private AlertDialog cancel_dialog;
+    private boolean cancel_dialog_result;
     
     EditText    _et_name        = null;
     EditText    _et_description = null;
@@ -33,8 +39,8 @@ public class EditTaskActivity extends Activity {
     TimePicker  _tp_time        = null;
     DatePicker  _dp_date        = null;
     Button      _bt_done        = null;
+    Button      _bt_cancel      = null;
     CheckBox    _cb_due_date    = null;
-    private static final String file_path = "/data/data/com.androidgroup.gbp.reminders/files/tasks";
 
     public EditTaskActivity() {
         // TODO Auto-generated constructor stub
@@ -50,6 +56,7 @@ public class EditTaskActivity extends Activity {
         _tp_time =          (TimePicker) findViewById(R.id.tp_time);
         _dp_date =          (DatePicker) findViewById(R.id.dp_date);
         _bt_done =          (Button)     findViewById(R.id.bt_done);
+        _bt_cancel =        (Button)     findViewById(R.id.bt_cancel);
         _cb_due_date =      (CheckBox)   findViewById(R.id.cb_due_date);
         
         _cb_due_date.setChecked(false);
@@ -84,7 +91,7 @@ public class EditTaskActivity extends Activity {
                 Intent intent = new Intent(v.getContext(), ViewTaskActivity.class);
                 intent.putExtra("NAME", _et_name.getText().toString());
                 intent.putExtra("DESCRIPTION", _et_description.getText().toString());
-                intent.putExtra("LOCATION", _et_description.getText().toString());
+                intent.putExtra("LOCATION", _et_location.getText().toString());
                 if (_cb_due_date.isChecked() == false) 
                     intent.putExtra("HASDUEDATE", 0);
                 else {
@@ -96,6 +103,14 @@ public class EditTaskActivity extends Activity {
                     intent.putExtra("MINUTE", _tp_time.getCurrentMinute());   
                 }
                 startActivityForResult(intent, 0);
+            }
+        });
+        
+        _bt_cancel.setOnClickListener(new View.OnClickListener() {            
+            public void onClick(View v) {
+                if (show_cancel_dialog(EditTaskActivity.this)) {
+                    
+                }
             }
         });
         
@@ -126,4 +141,28 @@ public class EditTaskActivity extends Activity {
             }
         });
     }  
+
+    private boolean show_cancel_dialog(Context context) {
+            if(cancel_dialog != null && cancel_dialog.isShowing()) 
+                return false;
+            cancel_dialog_result = false;
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Cancel");
+            builder.setMessage("Are you sure you want to cancel?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        cancel_dialog_result = true;
+                        cancel_dialog.dismiss();
+                    }});
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {                
+                public void onClick(DialogInterface dialog, int which) {
+                    cancel_dialog_result = false;
+                    cancel_dialog.dismiss();
+                }
+            });
+            builder.setCancelable(false);
+            cancel_dialog = builder.create();
+            cancel_dialog.show();
+            return cancel_dialog_result;
+    }
 }

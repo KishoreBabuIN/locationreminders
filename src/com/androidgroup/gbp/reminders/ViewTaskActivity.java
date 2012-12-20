@@ -41,7 +41,9 @@ public class ViewTaskActivity extends Activity {
             _tv_name.setText(extras.getString("NAME"));
             _tv_description.setText(extras.getString("DESCRIPTION"));
             _tv_location.setText(extras.getString("LOCATION"));
-            _tv_duedate.setText(extras.getString("DUEDATE"));
+            if (extras.getInt("HASDUEDATE") == 1) {
+                
+            }
         }
         
         _bt_back.setOnClickListener(new View.OnClickListener() {

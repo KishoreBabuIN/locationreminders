@@ -66,8 +66,6 @@ public class MainActivity extends ListActivity  {
                 imm.hideSoftInputFromWindow(_et_addtask.getWindowToken(), 0);
                 if (name.length() != 0)
                     tasks.add(new Task(getApplicationContext(), name));                
-                tasks.add(new Task(getApplicationContext(), "HELLO"));
-                tasks.get(0).set_location_name("77 Delafield St New Brunswick, NJ 08901");
                 update_list();
             }
         });
