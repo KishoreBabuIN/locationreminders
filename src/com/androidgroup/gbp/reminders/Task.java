@@ -31,6 +31,7 @@ public class Task implements Parcelable {
     private Boolean has_due_time;       // true if there is a set due time, else false
     private String location_name;       // name of location of task
     private GeoPoint location;          // geopoint location of task
+    private boolean has_location;       // true if task has a location, else false
     private long remind_time;           // amount of time in milliseconds within due time that user should be reminded 
     private float remind_distance;      // distance in meters within task location user should be reminded
     private int task_id;                 // unique identifier for task
@@ -48,6 +49,7 @@ public class Task implements Parcelable {
         has_due_time = false;
         location_name = "";
         location = new GeoPoint(0, 0);
+        has_location = false;
         remind_time = 0;
         remind_distance = 0;
         task_id = -1;
@@ -61,6 +63,7 @@ public class Task implements Parcelable {
         has_due_time = false;
         location_name = "";
         location = new GeoPoint(0, 0);
+        has_location = false;
         remind_time = 0;
         remind_distance = 0;
         task_id = -1;
@@ -80,6 +83,10 @@ public class Task implements Parcelable {
         int lat = in.readInt();
         int lon = in.readInt();
         location = new GeoPoint(lat, lon);
+        if (in.readInt() == 1)
+            has_location = true;
+        else 
+            has_location = false;
         remind_time = in.readLong();
         remind_distance = in.readFloat();
         task_id = in.readInt();
@@ -120,6 +127,10 @@ public class Task implements Parcelable {
         has_due_time = true;
     }
     
+    public void set_has_due_time(boolean val) {
+        has_due_time = val;
+    }
+    
     public boolean has_duetime() {
         return has_due_time;
     }
@@ -128,18 +139,32 @@ public class Task implements Parcelable {
         return location_name;
     }
     
-    public void set_location_name(String _location_name) {
+    public boolean set_location(String _location_name, Context context) {
+        boolean ret = false;
+        if (_location_name == null)
+            return ret;
         location_name = _location_name;
-        new GetAddressLocationTask().execute(location_name);
+        if (location_name.compareTo("") == 0) {
+            has_location = false;
+            return true;
+        }
+        GeoPoint temp = get_gp_from_loc(_location_name, context);
+        if (temp != null) {
+            location = temp; 
+            Log.i("SLGP", temp.toString());
+            ret = true;
+        }
+        has_location = ret;
+        return ret;
     }
     
     public GeoPoint get_location_gp() {
         return location;
     }
     
-//    public void set_location_gp(GeoPoint gp) {
-//        location = gp;
-//    }
+    public boolean has_loc() {
+        return has_location;
+    }
     
     public long get_remind_time() {
         return due_time.getTime() - remind_time;
@@ -211,9 +236,30 @@ public class Task implements Parcelable {
         protected void onPostExecute(GeoPoint gp) {
             if (gp == null) {
                 location_name = "";
-                //Toast.makeText(context, "Unable to find location", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Unable to find location", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    
+    private GeoPoint get_gp_from_loc(String address, Context context) {
+        Log.i("GGFL", "1");
+        if (context == null)
+            return null;
+        Log.i("GGFL", "2");
+        if (address == null)
+            return null;
+        Log.i("GGFL", "GGFL");
+        Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
+        GeoPoint gp = null;
+        Address ad = null;
+        try {
+            List<Address> addresses = geoCoder.getFromLocationName(address, 1);
+            ad = addresses.get(0);
+            gp = new GeoPoint((int)(ad.getLatitude() * 1E6), (int)(ad.getLongitude() * 1E6));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return gp;
     }
 
     public int describeContents() {
@@ -231,6 +277,10 @@ public class Task implements Parcelable {
         dest.writeString(location_name);
         dest.writeInt(location.getLatitudeE6());
         dest.writeInt(location.getLongitudeE6());
+        if (has_location)
+            dest.writeInt(1);
+        else
+            dest.writeInt(0);
         dest.writeLong(remind_time);
         dest.writeFloat(remind_distance);
         dest.writeInt(task_id);

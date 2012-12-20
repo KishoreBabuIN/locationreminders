@@ -1,3 +1,9 @@
+// TaskList.java
+// Greg Paton
+// 20 December 2012
+// wrapper class to hold a list of tasks
+// and provide methods for sorting tasks
+
 package com.androidgroup.gbp.reminders;
 
 import java.io.IOException;
@@ -32,9 +38,11 @@ public class TaskList {
         return names;
     }
     
+    // Update a task by the task id
+    // if task for id does not exist, add it to list
     public boolean set_by_id(Task _task, int id) {
         boolean ret = false;
-        if (id < 0)
+        if (id < 0 || _task == null)
             return ret;
         for(Task task : tasks) {
             if (task.get_id() == id) {

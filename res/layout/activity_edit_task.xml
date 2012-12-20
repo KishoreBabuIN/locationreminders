@@ -40,6 +40,14 @@
         android:singleLine="true" >
     </EditText>
 
+    <Button
+        android:id="@+id/bt_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Cancel" />
+
     <EditText
         android:id="@+id/et_location"
         android:layout_width="wrap_content"
@@ -47,10 +55,27 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/et_description"
+        android:layout_marginTop="46dp"
         android:ems="10"
         android:hint="Location"
         android:imeOptions="actionDone"
         android:inputType="textPostalAddress" />
+
+    <CheckBox
+        android:id="@+id/cb_due_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/et_description"
+        android:text="Due Date" />
+
+    <CheckBox
+        android:id="@+id/cb_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/et_description"
+        android:text="Location" />
 
     <DatePicker
         android:id="@+id/dp_date"
@@ -59,7 +84,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/et_location"
-        android:layout_marginTop="59dp" />
+        android:layout_marginTop="15dp" />
 
     <TimePicker
         android:id="@+id/tp_time"
@@ -68,23 +93,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/dp_date"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="37dp" />
-
-    <CheckBox
-        android:id="@+id/cb_due_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/et_location"
-        android:text="Set Due Date" />
-
-    <Button
-        android:id="@+id/bt_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="Cancel" />
+        android:layout_marginTop="24dp" />
 
 </RelativeLayout>

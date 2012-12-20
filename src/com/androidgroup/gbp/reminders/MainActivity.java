@@ -74,9 +74,7 @@ public class MainActivity extends ListActivity  {
         _bt_edittask.setOnClickListener(new View.OnClickListener() {            
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), EditTaskActivity.class);
-                String name = _et_addtask.getText().toString();
-                if (name.length() != 0) 
-                    intent.putExtra("NAME", name);
+                intent.putExtra("TASK", new Task(getApplicationContext(), _et_addtask.getText().toString()));
                 startActivityForResult(intent, 0);
             }
         });
@@ -103,13 +101,16 @@ public class MainActivity extends ListActivity  {
     protected void onResume() {
         super.onRestart();
         Log.i("OR", "ON RESUME");
-        Task task = getIntent().getParcelableExtra("TASK");
+        Task temp = getIntent().getParcelableExtra("TASK");
+        if (temp != null)
+            task_list.set_by_id(temp, temp.get_id());
+        update_list();
     }
     
     @Override
     public void onStop() {
         super.onStop();
-        Log.i("OS", "ON STOP");
+        Log.i("OS", "ON STOP MAIN");
     }
 
     @Override

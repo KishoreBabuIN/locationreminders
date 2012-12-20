@@ -39,8 +39,11 @@ public class ViewTaskActivity extends Activity {
         _bt_edit =          (Button)   findViewById(R.id.bt_edit);
         _bt_delete =        (Button)   findViewById(R.id.bt_delete);
         
+        Log.i("OC", "VIEWTASK");
         
-        task = getIntent().getParcelableExtra("TASK");
+        Task temp = getIntent().getParcelableExtra("TASK");
+        if (temp != null)
+            task = temp;
 
         update();
         
@@ -68,9 +71,14 @@ public class ViewTaskActivity extends Activity {
     }
     
     public void update() {
+        if (task == null)
+            return;
         _tv_name.setText(task.get_name());
         _tv_description.setText(task.get_description());
-        _tv_location.setText(task.get_location_name());
+        if (task.has_loc()) 
+            _tv_location.setText(task.get_location_name());
+        else 
+            _tv_location.setText("");
         if (task.has_duetime())
             _tv_duedate.setText(task.get_due_time_string());
         else
@@ -81,7 +89,9 @@ public class ViewTaskActivity extends Activity {
     protected void onResume() {
         super.onRestart();
         Log.i("OR", "ON RESUME VIEW");
-        task = getIntent().getParcelableExtra("TASK");
+        Task temp = getIntent().getParcelableExtra("TASK");
+        if (temp != null)
+            task = temp;
         update();
     }
 }

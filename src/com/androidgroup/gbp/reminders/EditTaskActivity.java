@@ -24,7 +24,7 @@ import android.widget.TimePicker;
 public class EditTaskActivity extends Activity {
 
     private AlertDialog cancel_dialog;
-    private boolean cancel_dialog_result;
+    private AlertDialog location_dialog;
     
     EditText    _et_name        = null;
     EditText    _et_description = null;
@@ -34,16 +34,20 @@ public class EditTaskActivity extends Activity {
     Button      _bt_done        = null;
     Button      _bt_cancel      = null;
     CheckBox    _cb_due_date    = null;
+    CheckBox    _cb_location    = null; 
     
     private Task task = null;
+    private Context context;
 
     public EditTaskActivity() {
         // TODO Auto-generated constructor stub
     }
 
     public void onCreate(Bundle savedInstanceState) {
+        Log.i("oc", "here");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_task);
+        Log.i("oc", "here");
         
         _et_name =          (EditText)   findViewById(R.id.et_name);
         _et_description =   (EditText)   findViewById(R.id.et_description);
@@ -53,13 +57,17 @@ public class EditTaskActivity extends Activity {
         _bt_done =          (Button)     findViewById(R.id.bt_done);
         _bt_cancel =        (Button)     findViewById(R.id.bt_cancel);
         _cb_due_date =      (CheckBox)   findViewById(R.id.cb_due_date);
+        _cb_location =      (CheckBox)   findViewById(R.id.cb_location);
         
 
-        task = getIntent().getParcelableExtra("TASK");
-        _et_name.setText(task.get_name());
-        _et_description.setText(task.get_description());
-        _et_location.setText(task.get_location_name());
-                
+        Task temp = getIntent().getParcelableExtra("TASK");
+        if (temp != null) {
+            task = temp;
+            _et_name.setText(task.get_name());
+            _et_description.setText(task.get_description());
+            _et_location.setText(task.get_location_name());
+        }
+                        
         if (task.has_duetime()) {
             _cb_due_date.setChecked(true);
             _dp_date.setVisibility(View.VISIBLE);
@@ -69,6 +77,15 @@ public class EditTaskActivity extends Activity {
             _cb_due_date.setChecked(false);
             _dp_date.setVisibility(View.INVISIBLE);
             _tp_time.setVisibility(View.INVISIBLE);
+        }
+        
+        if (task.has_loc()) {
+            _cb_location.setChecked(true);
+            _et_location.setVisibility(View.VISIBLE);
+        }
+        else {
+            _cb_location.setChecked(false);
+            _et_location.setVisibility(View.INVISIBLE);
         }
         
         _cb_due_date.setOnClickListener(new View.OnClickListener() {
@@ -86,12 +103,41 @@ public class EditTaskActivity extends Activity {
             }
         });
         
+        _cb_location.setOnClickListener(new View.OnClickListener() {            
+            public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(_cb_due_date.getWindowToken(), 0);
+                if (_cb_location.isChecked()) 
+                    _et_location.setVisibility(View.VISIBLE);
+                else
+                    _et_location.setVisibility(View.INVISIBLE);
+            }
+        });
+        
         _bt_done.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ViewTaskActivity.class);
                 task.set_name(_et_name.getText().toString());
                 task.set_description(_et_description.getText().toString());
-                task.set_location_name(_et_location.getText().toString());
+                if (_cb_location.isChecked()) {
+                    task.set_location(_et_location.getText().toString(), v.getContext());
+                }
+                else {
+                    task.set_location("", v.getContext());
+                }
+                if (_cb_due_date.isChecked()) {
+                    task.set_has_due_time(true);
+                    int min   = _tp_time.getCurrentMinute();
+                    int hour  = _tp_time.getCurrentHour();
+                    Log.i("hour", String.valueOf(hour));
+                    int date  = _dp_date.getDayOfMonth();
+                    int month = _dp_date.getMonth();
+                    int year  = _dp_date.getYear();
+                    task.set_due_time(min, hour, date, month, year);
+                }
+                else {
+                    task.set_has_due_time(false);
+                }
                 intent.putExtra("TASK", task);
                 startActivityForResult(intent, 0);
             }
@@ -99,9 +145,7 @@ public class EditTaskActivity extends Activity {
         
         _bt_cancel.setOnClickListener(new View.OnClickListener() {            
             public void onClick(View v) {
-                if (show_cancel_dialog(EditTaskActivity.this)) {
-                    
-                }
+                show_cancel_dialog(EditTaskActivity.this);
             }
         });
         
@@ -110,6 +154,12 @@ public class EditTaskActivity extends Activity {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(_et_location.getWindowToken(), 0);
+                    // check if location is valid
+                    Task temp = new Task(v.getContext());
+                    if(temp.set_location(_et_location.getText().toString(), v.getContext()) == false) {
+                        show_location_dialog(v.getContext());
+                        _et_location.setText("");
+                    }
                     return true;
                 }
                 return false;
@@ -117,43 +167,89 @@ public class EditTaskActivity extends Activity {
             
         });
         
-        _tp_time.setOnClickListener(new View.OnClickListener() {            
-            public void onClick(View v) {
-                Log.i("TP", "ON CLICK");
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(_tp_time.getWindowToken(), 0);
-            }
-        });
+//        _tp_time.setOnClickListener(new View.OnClickListener() {            
+//            public void onClick(View v) {
+//                Log.i("TP", "ON CLICK");
+//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.hideSoftInputFromWindow(_tp_time.getWindowToken(), 0);
+//            }
+//        });
         
-        _dp_date.setOnClickListener(new View.OnClickListener() {            
-            public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(_dp_date.getWindowToken(), 0);
-            }
-        });
+//        _dp_date.setOnClickListener(new View.OnClickListener() {            
+//            public void onClick(View v) {
+//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.hideSoftInputFromWindow(_dp_date.getWindowToken(), 0);
+//            }
+//        });
     }  
 
-    private boolean show_cancel_dialog(Context context) {
+    private void show_cancel_dialog(Context _context) {
             if(cancel_dialog != null && cancel_dialog.isShowing()) 
-                return false;
-            cancel_dialog_result = false;
+                return;
+            if (_context == null)
+                return;
+            context = _context;
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Cancel");
             builder.setMessage("Are you sure you want to cancel?");
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg1) {
-                        cancel_dialog_result = true;
                         cancel_dialog.dismiss();
+                        Intent intent = new Intent(context, ViewTaskActivity.class);
+                        intent.putExtra("TASK", task);
+                        startActivityForResult(intent, 0);
                     }});
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {                
                 public void onClick(DialogInterface dialog, int which) {
-                    cancel_dialog_result = false;
                     cancel_dialog.dismiss();
                 }
             });
             builder.setCancelable(false);
             cancel_dialog = builder.create();
             cancel_dialog.show();
-            return cancel_dialog_result;
+    }
+
+    private void show_location_dialog(Context _context) {
+            if(location_dialog != null && location_dialog.isShowing()) 
+                return;
+            if (_context == null)
+                return;
+            context = _context;
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Invalid Location");
+            builder.setMessage("Please set a valid location");
+            builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        cancel_dialog.dismiss();
+                    }});
+            builder.setCancelable(false);
+            cancel_dialog = builder.create();
+            cancel_dialog.show();
+    }
+
+    private void show_change_location_dialog(Context _context) {
+            if(location_dialog != null && location_dialog.isShowing()) 
+                return;
+            if (_context == null)
+                return;
+            context = _context;
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Invalid Location");
+            builder.setMessage("Set a valid location?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        cancel_dialog.dismiss();
+                    }});
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {                
+                public void onClick(DialogInterface dialog, int which) {
+                    cancel_dialog.dismiss();
+                    Intent intent = new Intent(context, ViewTaskActivity.class);
+                    intent.putExtra("TASK", task);
+                    startActivityForResult(intent, 0);
+                }
+            });
+            builder.setCancelable(false);
+            cancel_dialog = builder.create();
+            cancel_dialog.show();
     }
 }
