@@ -1,5 +1,15 @@
 package com.androidgroup.gbp.reminders;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
+import java.io.StreamCorruptedException;
 import java.util.LinkedList;
 
 import android.os.Bundle;
@@ -30,6 +40,8 @@ public class MainActivity extends ListActivity  {
     private Button      _bt_addtask     = null;
     private Button      _bt_edittask    = null;
 
+    private static final String file_path = "/data/data/com.androidgroup.gbp.reminders/files/tasks.txt";
+
     
     // methods
     @Override
@@ -41,22 +53,9 @@ public class MainActivity extends ListActivity  {
         _bt_addtask = (Button) findViewById(R.id.bt_addtask);
         _bt_edittask = (Button) findViewById(R.id.bt_edittask);
         
-        //_et_addtask.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        
         task_list = new TaskList();
         tasks = task_list.get_tasks();
-//        for (int i = 0; i < 15; ++i) {
-//            tasks.add(new Task("Task" + i));
-//        } 
-//        tasks.get(2).set_due_time(00, 4, 1, 1, 2013);
-//        tasks.get(2).set_description("Do Stuff");
-//        tasks.get(2).set_location_name("Home");
         
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-//                                                                android.R.layout.simple_list_item_1, 
-//                                                                android.R.id.text1, 
-//                                                                task_list.get_names());
-//        _lvTasks.setAdapter(adapter);
         update_list();
         
         _bt_addtask.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +65,9 @@ public class MainActivity extends ListActivity  {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(_et_addtask.getWindowToken(), 0);
                 if (name.length() != 0)
-                    tasks.add(new Task(name));
+                    tasks.add(new Task(getApplicationContext(), name));                
+                tasks.add(new Task(getApplicationContext(), "HELLO"));
+                tasks.get(0).set_location_name("77 Delafield St New Brunswick, NJ 08901");
                 update_list();
             }
         });
@@ -85,7 +86,7 @@ public class MainActivity extends ListActivity  {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(_et_addtask.getWindowToken(), 0);
                     if (name.length() != 0)
-                        tasks.add(new Task(name));
+                        tasks.add(new Task(getApplicationContext(), name));
                     update_list();
                     return true;
                 }
@@ -93,6 +94,18 @@ public class MainActivity extends ListActivity  {
             }
         });
         
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onRestart();
+        Log.i("OR", "ON RESUME");
+    }
+    
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("OS", "ON STOP");
     }
 
     @Override
@@ -106,6 +119,7 @@ public class MainActivity extends ListActivity  {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         Log.i("OL", "Item clicked: " + position);
+        //tasks.get(position).saveObject(tasks.get(position), position, getApplicationContext());
         Intent intent = new Intent(v.getContext(), ViewTaskActivity.class);
         intent.putExtra("NAME", tasks.get(position).get_name());
         intent.putExtra("DESCRIPTION", tasks.get(position).get_description());

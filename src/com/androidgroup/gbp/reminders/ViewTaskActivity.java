@@ -3,7 +3,6 @@ package com.androidgroup.gbp.reminders;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -47,8 +46,7 @@ public class ViewTaskActivity extends Activity {
         
         _bt_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.i("OC", "BACK");
-                Intent intent = new Intent();
+                Intent intent = new Intent(v.getContext(), MainActivity.class);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -56,7 +54,6 @@ public class ViewTaskActivity extends Activity {
         
         _bt_edit.setOnClickListener(new View.OnClickListener() {            
             public void onClick(View v) {
-                Log.i("OC", "EDITVIEW");
                 Intent intent = new Intent(v.getContext(), EditTaskActivity.class);
                 startActivityForResult(intent, 0);
             }
@@ -65,8 +62,6 @@ public class ViewTaskActivity extends Activity {
         _bt_delete.setOnClickListener(new View.OnClickListener() {            
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                Log.i("OC", "DELETE");
-                
             }
         });
     }

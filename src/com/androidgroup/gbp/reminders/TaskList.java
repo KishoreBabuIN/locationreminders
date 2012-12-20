@@ -1,11 +1,18 @@
 package com.androidgroup.gbp.reminders;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.LinkedList;
 
 import com.google.android.maps.GeoPoint;
 
 public class TaskList {
+
+    private LinkedList<Task> tasks;
+    
 
     public TaskList() {
         tasks = new LinkedList<Task>();
@@ -77,6 +84,4 @@ public class TaskList {
         };
         java.util.Collections.sort(tasks, comp);
     }
-
-    private LinkedList<Task> tasks;
 }

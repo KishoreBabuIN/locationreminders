@@ -38,8 +38,8 @@
         android:hint="Description"
         android:imeOptions="actionNext"
         android:singleLine="true" >
-        
     </EditText>
+
     <EditText
         android:id="@+id/et_location"
         android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/et_location"
-        android:layout_marginTop="22dp" />
+        android:layout_marginTop="59dp" />
 
     <TimePicker
         android:id="@+id/tp_time"
@@ -67,6 +67,15 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/dp_date"
-        android:layout_marginTop="19dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="37dp" />
+
+    <CheckBox
+        android:id="@+id/cb_due_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/et_location"
+        android:text="Set Due Date" />
 
 </RelativeLayout>
