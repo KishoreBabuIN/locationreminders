@@ -49,6 +49,7 @@
         android:layout_below="@+id/et_description"
         android:ems="10"
         android:hint="Location"
+        android:imeOptions="actionDone"
         android:inputType="textPostalAddress" />
 
     <DatePicker

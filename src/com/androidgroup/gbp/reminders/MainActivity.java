@@ -74,7 +74,11 @@ public class MainActivity extends ListActivity  {
         
         _bt_edittask.setOnClickListener(new View.OnClickListener() {            
             public void onClick(View v) {
-
+                Intent intent = new Intent(v.getContext(), EditTaskActivity.class);
+                String name = _et_addtask.getText().toString();
+                if (name.length() != 0) 
+                    intent.putExtra("NAME", name);
+                startActivityForResult(intent, 0);
             }
         });
         
@@ -119,7 +123,6 @@ public class MainActivity extends ListActivity  {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         Log.i("OL", "Item clicked: " + position);
-        //tasks.get(position).saveObject(tasks.get(position), position, getApplicationContext());
         Intent intent = new Intent(v.getContext(), ViewTaskActivity.class);
         intent.putExtra("NAME", tasks.get(position).get_name());
         intent.putExtra("DESCRIPTION", tasks.get(position).get_description());

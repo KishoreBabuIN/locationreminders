@@ -9,14 +9,20 @@ import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.TimePicker;
 
 public class EditTaskActivity extends Activity {
@@ -38,20 +44,30 @@ public class EditTaskActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_task);
         
-        _et_name = (EditText) findViewById(R.id.et_name);
-        _et_description = (EditText) findViewById(R.id.et_description);
-        _et_location = (EditText) findViewById(R.id.et_location);
-        _tp_time = (TimePicker) findViewById(R.id.tp_time);
-        _dp_date = (DatePicker) findViewById(R.id.dp_date);
-        _bt_done = (Button) findViewById(R.id.bt_done);
-        _cb_due_date = (CheckBox) findViewById(R.id.cb_due_date);
+        _et_name =          (EditText)   findViewById(R.id.et_name);
+        _et_description =   (EditText)   findViewById(R.id.et_description);
+        _et_location =      (EditText)   findViewById(R.id.et_location);
+        _tp_time =          (TimePicker) findViewById(R.id.tp_time);
+        _dp_date =          (DatePicker) findViewById(R.id.dp_date);
+        _bt_done =          (Button)     findViewById(R.id.bt_done);
+        _cb_due_date =      (CheckBox)   findViewById(R.id.cb_due_date);
         
         _cb_due_date.setChecked(false);
         _dp_date.setVisibility(View.INVISIBLE);
         _tp_time.setVisibility(View.INVISIBLE);
         
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            _et_name.setText(extras.getString("NAME"));
+            _et_description.setText(extras.getString("DESCRIPTION"));
+            _et_location.setText(extras.getString("LOCATION"));
+            //_et_due_date.setText(extras.getString("DUEDATE"));
+        }
+        
         _cb_due_date.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(_cb_due_date.getWindowToken(), 0);
                 if (_cb_due_date.isChecked()) {
                     _dp_date.setVisibility(View.VISIBLE);
                     _tp_time.setVisibility(View.VISIBLE);  
@@ -82,5 +98,32 @@ public class EditTaskActivity extends Activity {
                 startActivityForResult(intent, 0);
             }
         });
-    }   
+        
+        _et_location.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(_et_location.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+            
+        });
+        
+        _tp_time.setOnClickListener(new View.OnClickListener() {            
+            public void onClick(View v) {
+                Log.i("TP", "ON CLICK");
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(_tp_time.getWindowToken(), 0);
+            }
+        });
+        
+        _dp_date.setOnClickListener(new View.OnClickListener() {            
+            public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(_dp_date.getWindowToken(), 0);
+            }
+        });
+    }  
 }

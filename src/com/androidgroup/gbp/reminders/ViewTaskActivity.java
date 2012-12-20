@@ -47,8 +47,7 @@ public class ViewTaskActivity extends Activity {
         _bt_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), MainActivity.class);
-                setResult(RESULT_OK, intent);
-                finish();
+                startActivityForResult(intent, 0);
             }
         });
         
