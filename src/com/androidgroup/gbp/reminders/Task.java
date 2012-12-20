@@ -127,12 +127,12 @@ public class Task implements Parcelable {
         has_due_time = true;
     }
     
-    public void set_has_due_time(boolean val) {
-        has_due_time = val;
-    }
-    
     public boolean has_duetime() {
         return has_due_time;
+    }
+    
+    public void set_has_due_time(boolean val) {
+        has_due_time = val;
     }
     
     public String get_location_name() {

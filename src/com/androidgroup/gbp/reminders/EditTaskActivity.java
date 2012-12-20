@@ -1,6 +1,9 @@
 package com.androidgroup.gbp.reminders;
 
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -72,6 +75,11 @@ public class EditTaskActivity extends Activity {
             _cb_due_date.setChecked(true);
             _dp_date.setVisibility(View.VISIBLE);
             _tp_time.setVisibility(View.VISIBLE);
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTimeInMillis(task.get_due_time());
+            _dp_date.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            _tp_time.setCurrentHour(cal.get(Calendar.HOUR));
+            _tp_time.setCurrentMinute(cal.get(Calendar.MINUTE));
         }
         else {
             _cb_due_date.setChecked(false);
