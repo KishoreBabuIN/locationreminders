@@ -12,9 +12,17 @@ import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import com.google.android.maps.GeoPoint;
+
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.app.ListActivity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -41,8 +49,9 @@ public class MainActivity extends ListActivity  {
     private Button      _bt_addtask     = null;
     private Button      _bt_edittask    = null;
 
-    private static final String file_path = "/data/data/com.androidgroup.gbp.reminders/files/tasks.txt";
-
+    private double latitude;
+    private double longitude;
+    private GeoPoint location;
     
     // methods
     @Override
@@ -58,6 +67,42 @@ public class MainActivity extends ListActivity  {
         tasks = task_list.get_tasks();
         
         update_list();
+        
+
+        //Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location loc) {
+                if (loc != null) {
+                    latitude = loc.getLatitude();
+                    longitude = loc.getLongitude();
+                    location = new GeoPoint((int)(latitude * 1E6), (int)(longitude * 1E6));
+                    Log.i("LOC", location.toString());
+                    LinkedList<Task> list = task_list.find_near_location(location);
+                    for (Task task : list) {
+                        Log.i("LOC", task.get_name());
+                        //new AlertDialog.Builder(getApplicationContext()).setTitle(task.get_name()).setMessage("Watch out!").setNeutralButton("Close", null).show();
+                    }
+                    //mapCon.setZoom(12);
+                    //mapCon.setCenter(point);
+                }
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+        
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        
         
         _bt_addtask.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -100,7 +145,7 @@ public class MainActivity extends ListActivity  {
     @Override
     protected void onResume() {
         super.onRestart();
-        Log.i("OR", "ON RESUME");
+        Log.i("OR", "ON RESUME MAIN");
         Task temp = getIntent().getParcelableExtra("TASK");
         if (temp != null)
             task_list.set_by_id(temp, temp.get_id());
@@ -142,5 +187,13 @@ public class MainActivity extends ListActivity  {
                                                                 android.R.id.text1, 
                                                                 task_list.get_names());
         _lv_tasks.setAdapter(adapter);
+    }
+    
+    private class updateLocationTask extends TimerTask {
+        @Override
+        public void run() {
+            
+        }
+        
     }
 }

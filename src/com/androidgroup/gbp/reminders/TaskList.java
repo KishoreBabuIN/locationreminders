@@ -13,6 +13,9 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.LinkedList;
 
+import android.location.Location;
+import android.util.Log;
+
 import com.google.android.maps.GeoPoint;
 
 public class TaskList {
@@ -55,6 +58,36 @@ public class TaskList {
             ret = true;
         }
         return ret;
+    }
+    
+    public Task get_by_id(int id) {
+        if (id < 0)
+            return null;
+        for (Task task : tasks) {
+            if (task.get_id() == id)
+                return task;
+        }
+        return null;
+    }
+    
+    public LinkedList<Task> find_near_location(GeoPoint loc) {
+        if (loc == null)
+            return null;
+        LinkedList<Task> list = new LinkedList<Task>();
+        float[] results = new float[2];
+        float distance;
+        for (Task task : tasks) {
+            Location.distanceBetween(task.get_location().getLatitudeE6(), 
+                                     task.get_location().getLongitudeE6(), 
+                                     loc.getLatitudeE6(), 
+                                     loc.getLongitudeE6(), 
+                                     results);
+            distance = results[0] / 1000000;
+            Log.i("LOC", "Distance between" + String.valueOf(distance));
+            if (distance <= task.get_remind_distance())
+                list.add(task);
+        }
+        return list;
     }
     
     public void sort_by_due_time() {

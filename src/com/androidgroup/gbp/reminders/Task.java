@@ -33,7 +33,7 @@ public class Task implements Parcelable {
     private GeoPoint location;          // geopoint location of task
     private boolean has_location;       // true if task has a location, else false
     private long remind_time;           // amount of time in milliseconds within due time that user should be reminded 
-    private float remind_distance;      // distance in meters within task location user should be reminded
+    private int remind_distance;      // distance in meters within task location user should be reminded
     private int task_id;                 // unique identifier for task
     private Context context;
 
@@ -51,7 +51,8 @@ public class Task implements Parcelable {
         location = new GeoPoint(0, 0);
         has_location = false;
         remind_time = 0;
-        remind_distance = 0;
+        // hard code distance of ~1 mile
+        remind_distance = 1600;
         task_id = -1;
         context = _context;
     }
@@ -65,7 +66,7 @@ public class Task implements Parcelable {
         location = new GeoPoint(0, 0);
         has_location = false;
         remind_time = 0;
-        remind_distance = 0;
+        remind_distance = 1600;
         task_id = -1;
         context = _context;
     }
@@ -88,7 +89,7 @@ public class Task implements Parcelable {
         else 
             has_location = false;
         remind_time = in.readLong();
-        remind_distance = in.readFloat();
+        remind_distance = in.readInt();
         task_id = in.readInt();
     }
     
@@ -133,6 +134,10 @@ public class Task implements Parcelable {
     
     public void set_has_due_time(boolean val) {
         has_due_time = val;
+    }
+    
+    public GeoPoint get_location() {
+        return location;
     }
     
     public String get_location_name() {
@@ -187,12 +192,12 @@ public class Task implements Parcelable {
         return false;
     }
     
-    public float get_remind_distance() {
+    public int get_remind_distance() {
         return remind_distance;
     }
     
     // input: distance (in meters) 
-    public boolean set_remind_distance(float distance) {
+    public boolean set_remind_distance(int distance) {
         if (distance >= 0) {
             remind_distance = distance;
             return true;
@@ -282,7 +287,7 @@ public class Task implements Parcelable {
         else
             dest.writeInt(0);
         dest.writeLong(remind_time);
-        dest.writeFloat(remind_distance);
+        dest.writeInt(remind_distance);
         dest.writeInt(task_id);
     }
     

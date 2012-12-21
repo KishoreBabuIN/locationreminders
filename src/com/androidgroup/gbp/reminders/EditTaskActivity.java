@@ -129,6 +129,7 @@ public class EditTaskActivity extends Activity {
                 task.set_description(_et_description.getText().toString());
                 if (_cb_location.isChecked()) {
                     task.set_location(_et_location.getText().toString(), v.getContext());
+                    Log.i("DONE", task.get_location().toString());
                 }
                 else {
                     task.set_location("", v.getContext());
